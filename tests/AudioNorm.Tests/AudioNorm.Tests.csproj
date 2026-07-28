@@ -8,10 +8,12 @@
     <PackageReference Include="xunit" Version="2.5.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <!-- Explicit compile-time references so the C# compiler definitely sees the attribute/Assert types -->
+    <PackageReference Include="xunit.assert" Version="2.5.3" />
+    <PackageReference Include="xunit.core" Version="2.5.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- ProjectReference must point from tests/AudioNorm.Tests to the main project at repo root -->
     <ProjectReference Include="..\..\AudioNorm+.csproj" />
   </ItemGroup>
 </Project>
