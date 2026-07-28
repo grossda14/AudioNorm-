@@ -5,7 +5,6 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
     <AssemblyName>AudioNorm+</AssemblyName>
     <RootNamespace>AudioNormPlus</RootNamespace>
     <Version>1.0.0</Version>
