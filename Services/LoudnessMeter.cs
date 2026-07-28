@@ -16,6 +16,23 @@ namespace AudioNormPlus.Services
         private const double SilenceDbfs = -200.0;
 
         /// <summary>
+        /// Calculates the approximate integrated loudness (LUFS) from pre-computed
+        /// sum-of-squares and sample count (for memory-efficient streaming).
+        /// </summary>
+        /// <param name="sumSquares">Sum of squares of all audio samples</param>
+        /// <param name="sampleCount">Total number of samples processed</param>
+        /// <returns>
+        /// Approximate LUFS value as a negative dBFS number (e.g. -18.0),
+        /// or -200.0 for silence or zero sample count.
+        /// </returns>
+        public double MeasureLoudness(double sumSquares, long sampleCount)
+        {
+            if (sampleCount <= 0) return -200.0;
+            double rms = Math.Sqrt(sumSquares / sampleCount);
+            return rms > 0.0 ? 20.0 * Math.Log10(rms) : -200.0;
+        }
+
+        /// <summary>
         /// Calculates the approximate integrated loudness (LUFS) from an array of
         /// normalized audio samples. Samples must be in the range [-1.0, 1.0].
         /// </summary>

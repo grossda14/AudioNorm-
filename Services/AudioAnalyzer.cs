@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using NAudio.Wave;
 using AudioNormPlus.Models;
@@ -21,6 +20,7 @@ namespace AudioNormPlus.Services
         /// Analyze the given audio file and populate Duration and LoudnessIntegrated (approximate LUFS).
         /// Uses NAudio's MediaFoundationReader to support common formats (MP3, AAC, WAV).
         /// Delegates loudness calculation to <see cref="LoudnessMeter"/> (RMS-based approximation).
+        /// Samples are processed in chunks to avoid loading the full audio file into memory.
         /// </summary>
         public async Task AnalyzeFileAsync(AudioFile file)
         {
@@ -34,16 +34,21 @@ namespace AudioNormPlus.Services
 
                 const int bufferSamples = 8192;
                 float[] buffer = new float[bufferSamples];
-                var allSamples = new List<float>();
+                long totalSamples = 0;
+                double sumSquares = 0.0;
 
                 int read;
                 while ((read = sampleProvider.Read(buffer, 0, buffer.Length)) > 0)
                 {
                     for (int i = 0; i < read; i++)
-                        allSamples.Add(buffer[i]);
+                    {
+                        double s = buffer[i];
+                        sumSquares += s * s;
+                    }
+                    totalSamples += read;
                 }
 
-                double lufs = _loudnessMeter.MeasureLoudness(allSamples.ToArray());
+                double lufs = _loudnessMeter.MeasureLoudness(sumSquares, totalSamples);
 
                 file.Duration = reader.TotalTime;
                 file.LoudnessIntegrated = Math.Round(lufs, 2);
