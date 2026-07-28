@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v6.0.0
+        with:
+          dotnet-version: 8.0.x
+          cache: true
+          cache-dependency-path: |
+            AudioNorm+.csproj
+            tests/AudioNorm.Tests/AudioNorm.Tests.csproj
+
+      - name: Restore NuGet packages
+        run: dotnet restore .\tests\AudioNorm.Tests\AudioNorm.Tests.csproj
+
+      - name: Build solution
+        run: dotnet build .\tests\AudioNorm.Tests\AudioNorm.Tests.csproj --configuration Release --no-restore
+
+      - name: Run unit tests
+        id: tests
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "$env:GITHUB_WORKSPACE\TestResults" | Out-Null
+          dotnet test .\tests\AudioNorm.Tests\AudioNorm.Tests.csproj --configuration Release --no-build --logger "trx;LogFileName=AudioNorm.Tests.trx" --results-directory "$env:GITHUB_WORKSPACE\TestResults"
+          exit $LASTEXITCODE
+
+      - name: Summarize test results
+        if: always()
+        shell: pwsh
+        run: |
+          $trx = Get-ChildItem -Path "$env:GITHUB_WORKSPACE\TestResults" -Filter *.trx -Recurse | Select-Object -First 1
+          if (-not $trx) {
+            "## Windows test results`n`nNo TRX file was generated." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+            exit 0
+          }
+
+          [xml]$results = Get-Content $trx.FullName
+          $counters = $results.TestRun.ResultSummary.Counters
+
+          @(
+            "## Windows test results"
+            ""
+            "- Total: $($counters.total)"
+            "- Passed: $($counters.passed)"
+            "- Failed: $($counters.failed)"
+            "- Skipped: $($counters.notExecuted)"
+            ""
+            "| Test | Outcome | Duration |"
+            "| --- | --- | --- |"
+          ) | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+
+          foreach ($result in $results.TestRun.Results.UnitTestResult) {
+            "| $($result.testName) | $($result.outcome) | $($result.duration) |" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+          }
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: windows-test-results
+          path: TestResults/*.trx
+          if-no-files-found: warn
+
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v6.0.0
+        with:
+          dotnet-version: 8.0.x
+          cache: true
+          cache-dependency-path: |
+            AudioNorm+.csproj
+            tests/AudioNorm.Tests/AudioNorm.Tests.csproj
+
+      - name: Restore NuGet packages
+        run: dotnet restore ./AudioNorm+.csproj
+
+      - name: Build project
+        run: dotnet build ./AudioNorm+.csproj --configuration Release --no-restore -p:EnableWindowsTargeting=true
+
+      - name: Note Linux validation scope
+        run: |
+          echo "Linux validates restore/build only; Windows test execution remains in the windows-latest job because the test host requires Microsoft.WindowsDesktop.App." >> "$GITHUB_STEP_SUMMARY"
