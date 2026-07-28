@@ -27,9 +27,9 @@ namespace AudioNormPlus.Services
         /// </returns>
         public double MeasureLoudness(double sumSquares, long sampleCount)
         {
-            if (sampleCount <= 0) return -200.0;
+            if (sampleCount <= 0) return SilenceDbfs;
             double rms = Math.Sqrt(sumSquares / sampleCount);
-            return rms > 0.0 ? 20.0 * Math.Log10(rms) : -200.0;
+            return rms > 0.0 ? 20.0 * Math.Log10(rms) : SilenceDbfs;
         }
 
         /// <summary>
