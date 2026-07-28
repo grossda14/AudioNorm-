@@ -364,13 +364,14 @@ namespace AudioNormPlus.UI
 
             // Slider value is a fine-tuning offset on top of the calculated gain.
             double sliderOffset = gainSlider.Value * 0.5;
+            var processableFiles = audioFiles.Where(f => f.Status == ProcessingStatus.Analyzed || f.Status == ProcessingStatus.Applied).ToList();
 
             try
             {
                 if (currentMode == AnalysisMode.Track)
                 {
                     // Use each file's individually calculated gain plus the slider offset.
-                    foreach (var file in audioFiles.Where(f => f.Status == ProcessingStatus.Analyzed || f.Status == ProcessingStatus.Applied))
+                    foreach (var file in processableFiles)
                     {
                         double trackGain = (file.CalculatedGain ?? 0.0) + sliderOffset;
                         await applier.ApplyGainAsync(file, trackGain);
@@ -378,8 +379,7 @@ namespace AudioNormPlus.UI
                 }
                 else // Album mode
                 {
-                    var filesToProcess = audioFiles.Where(f => f.Status == ProcessingStatus.Analyzed || f.Status == ProcessingStatus.Applied).ToList();
-                    await applier.ApplyAlbumGainAsync(filesToProcess, sliderOffset);
+                    await applier.ApplyAlbumGainAsync(processableFiles, sliderOffset);
                 }
 
                 UpdateFileGrid();

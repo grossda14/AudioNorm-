@@ -51,10 +51,9 @@ namespace AudioNormPlus.Services
                 var data = new ReplayGainData
                 {
                     TrackGain = trackGain,
-                    // Peak calculation requires a separate analysis pass (not yet implemented in AudioAnalyzer).
-                    // 1.0 is used as a conservative placeholder — it signals "peak at full scale" and tells
-                    // players that no headroom is guaranteed. A future enhancement should populate this from
-                    // the actual max-absolute-sample value measured during audio analysis.
+                    // TODO: Implement actual peak detection in AudioAnalyzer and store it on AudioFile.
+                    // Until then, 1.0 (0 dBFS) is used as a conservative placeholder — it tells
+                    // players that no headroom is guaranteed and prevents false peak-based normalization.
                     TrackPeak = 1.0,
                     AlbumGain = albumGain,
                     AlbumPeak = albumGain.HasValue ? 1.0 : null
@@ -86,8 +85,9 @@ namespace AudioNormPlus.Services
         public async Task ApplyAlbumGainAsync(IEnumerable<AudioFile> files, double sliderOffset)
         {
             var fileList = files.ToList();
-            // In album mode every file's CalculatedGain is the album gain; use the first as reference.
-            double baseAlbumGain = fileList.FirstOrDefault()?.CalculatedGain ?? 0.0;
+            // In album mode every file shares the same CalculatedGain (set by ReplayGainCalculator.CalculateAlbumGain).
+            // We derive the shared album gain from the first analysed file; all others should have the same value.
+            double baseAlbumGain = fileList.FirstOrDefault(f => f.CalculatedGain.HasValue)?.CalculatedGain ?? 0.0;
             double effectiveAlbumGain = baseAlbumGain + sliderOffset;
 
             foreach (var file in fileList)
