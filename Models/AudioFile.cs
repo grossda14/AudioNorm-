@@ -24,6 +24,8 @@ namespace AudioNormPlus.Models
         public string Format { get; }
         public TimeSpan Duration { get; set; }
         public double? LoudnessIntegrated { get; set; }
+        public double? TrackPeak { get; set; }
+        public double? AlbumPeak { get; set; }
         public double? CalculatedGain { get; set; }
         public double AppliedGain { get; set; }
         public ProcessingStatus Status { get; set; }

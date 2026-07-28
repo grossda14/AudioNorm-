@@ -31,6 +31,15 @@ namespace Xunit
         }
 
         /// <summary>
+        /// Asserts that a condition is false.
+        /// </summary>
+        public static void False(bool condition)
+        {
+            if (condition)
+                throw new AssertionException("Assert.False failed. Condition was true.");
+        }
+
+        /// <summary>
         /// Asserts that two doubles are equal within a specified precision.
         /// </summary>
         public static void Equal(double expected, double actual, int precision)

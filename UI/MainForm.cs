@@ -241,6 +241,13 @@ namespace AudioNormPlus.UI
                 },
                 new DataGridViewTextBoxColumn
                 {
+                    Name = "TrackPeak",
+                    HeaderText = "Peak (dBFS)",
+                    Width = 110,
+                    DefaultCellStyle = new DataGridViewCellStyle { Font = new Font("Segoe UI", 9), Alignment = DataGridViewContentAlignment.MiddleCenter }
+                },
+                new DataGridViewTextBoxColumn
+                {
                     Name = "CalculatedGain",
                     HeaderText = "Calc. Gain (dB)",
                     Width = 120,
@@ -329,16 +336,20 @@ namespace AudioNormPlus.UI
                             double gain = calculator.CalculateTrackGain(file);
                             file.CalculatedGain = calculator.NormalizeGainIncrement(gain);
                         }
+                        // In track mode, album peak equals the track's own peak
+                        file.AlbumPeak = file.TrackPeak;
                     }
                 }
                 else // Album mode
                 {
                     double albumGain = calculator.CalculateAlbumGain(audioFiles);
                     albumGain = calculator.NormalizeGainIncrement(albumGain);
+                    double albumPeak = calculator.CalculateAlbumPeak(audioFiles);
 
                     foreach (var file in audioFiles)
                     {
                         file.CalculatedGain = albumGain;
+                        file.AlbumPeak = albumPeak;
                     }
                 }
 
@@ -370,13 +381,14 @@ namespace AudioNormPlus.UI
                 {
                     foreach (var file in audioFiles)
                     {
-                        await applier.ApplyGainAsync(file, gainDb);
+                        await applier.ApplyGainAsync(file, gainDb, file.TrackPeak, gainDb, file.AlbumPeak);
                     }
                 }
                 else // Album mode
                 {
                     var filesToProcess = audioFiles.Where(f => f.Status == ProcessingStatus.Analyzed || f.Status == ProcessingStatus.Applied).ToList();
-                    await applier.ApplyAlbumGainAsync(filesToProcess, gainDb, gainDb);
+                    double albumPeak = calculator.CalculateAlbumPeak(filesToProcess);
+                    await applier.ApplyAlbumGainAsync(filesToProcess, gainDb, gainDb, albumPeak);
                 }
 
                 UpdateFileGrid();
@@ -412,6 +424,7 @@ namespace AudioNormPlus.UI
                     file.Format,
                     durationStr,
                     file.LoudnessIntegrated?.ToString("F2") ?? "—",
+                    file.TrackPeak?.ToString("F4") ?? "—",
                     file.CalculatedGain?.ToString("+0.0;-0.0;0.0") ?? "—",
                     file.AppliedGain != 0 ? file.AppliedGain.ToString("+0.0;-0.0;0.0") : "—",
                     file.Status

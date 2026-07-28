@@ -56,5 +56,35 @@ namespace AudioNormPlus.Services
             double rms = Math.Sqrt(sumSquares / samples.Length);
             return rms > 0.0 ? 20.0 * Math.Log10(rms) : SilenceDbfs;
         }
+
+        /// <summary>
+        /// Converts a linear peak amplitude value to dBFS.
+        /// </summary>
+        /// <param name="peakLinear">Maximum absolute sample value in the range [0.0, 1.0]</param>
+        /// <returns>Peak level in dBFS, or -200.0 for silence (peakLinear == 0).</returns>
+        public double PeakToDbfs(double peakLinear)
+        {
+            return peakLinear > 0.0 ? 20.0 * Math.Log10(peakLinear) : SilenceDbfs;
+        }
+
+        /// <summary>
+        /// Measures the peak level of an array of audio samples.
+        /// </summary>
+        /// <param name="samples">Audio samples normalized to [-1.0, 1.0]</param>
+        /// <returns>Peak level in dBFS, or -200.0 for silence or empty input.</returns>
+        public double MeasurePeak(float[] samples)
+        {
+            if (samples == null || samples.Length == 0)
+                return SilenceDbfs;
+
+            double peak = 0.0;
+            for (int i = 0; i < samples.Length; i++)
+            {
+                double abs = Math.Abs(samples[i]);
+                if (abs > peak) peak = abs;
+            }
+
+            return PeakToDbfs(peak);
+        }
     }
 }

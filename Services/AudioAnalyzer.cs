@@ -43,6 +43,7 @@ namespace AudioNormPlus.Services
                 float[] buffer = new float[bufferSamples];
                 long totalSamples = 0;
                 double sumSquares = 0.0;
+                double peakLinear = 0.0;
 
                 int read;
                 while ((read = sampleProvider.Read(buffer, 0, buffer.Length)) > 0)
@@ -51,14 +52,18 @@ namespace AudioNormPlus.Services
                     {
                         double s = buffer[i];
                         sumSquares += s * s;
+                        double abs = Math.Abs(s);
+                        if (abs > peakLinear) peakLinear = abs;
                     }
                     totalSamples += read;
                 }
 
                 double lufs = _loudnessMeter.MeasureLoudness(sumSquares, totalSamples);
+                double peakDbfs = _loudnessMeter.PeakToDbfs(peakLinear);
 
                 file.Duration = reader.TotalTime;
                 file.LoudnessIntegrated = Math.Round(lufs, 2);
+                file.TrackPeak = Math.Round(peakDbfs, 4);
                 file.Status = ProcessingStatus.Analyzed;
             }
             catch (Exception ex)
