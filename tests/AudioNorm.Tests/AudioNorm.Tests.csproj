@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AudioNorm+.csproj" />
+    <!-- ProjectReference must point from tests/AudioNorm.Tests to the main project at repo root -->
+    <ProjectReference Include="..\..\AudioNorm+.csproj" />
   </ItemGroup>
 </Project>
