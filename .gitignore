@@ -1,0 +1,28 @@
+## .NET Build Artifacts
+bin/
+obj/
+
+## User-specific files
+*.user
+*.suo
+*.userprefs
+
+## IDE files
+.vs/
+.vscode/
+*.DotSettings.user
+
+## NuGet packages
+packages/
+*.nupkg
+
+## OS files
+.DS_Store
+Thumbs.db
+
+## Logs
+*.log
+
+## Temp files
+*.tmp
+*.bak
