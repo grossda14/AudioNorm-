@@ -23,9 +23,9 @@ namespace AudioNormPlus.Services
             {
                 // Create a non-destructive backup
                 string backupPath = file.FilePath + ".bak";
-                if (!File.Exists(backupPath))
+                if (!System.IO.File.Exists(backupPath))
                 {
-                    File.Copy(file.FilePath, backupPath);
+                    System.IO.File.Copy(file.FilePath, backupPath);
                 }
 
                 // Use TagLib# to open and update tags
