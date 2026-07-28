@@ -114,9 +114,39 @@ This runs the application directly without creating an executable.
 
 ## CI/CD Integration
 
-For automated builds on every commit, configure GitHub Actions:
+GitHub Actions workflows now live in `.github/workflows/`:
 
-Create `.github/workflows/build.yml` with automated build and release workflows.
+- `ci.yml` - Pull request and push validation on Windows, plus Linux build validation
+- `codeql.yml` - C# CodeQL security scanning with uploads to the GitHub Security tab
+- `release.yml` - Manual or tag-triggered Windows x64 release publishing
+
+### Running Workflows Locally with `act`
+
+`act` is useful for quick Linux validation, but it cannot fully emulate `windows-latest`. In practice:
+
+- Use `act` for the Linux build-validation job in `ci.yml`
+- Use GitHub-hosted Windows runners for the Windows test and release jobs
+
+Example:
+
+```bash
+act pull_request -W .github/workflows/ci.yml -j build-linux -P ubuntu-latest=catthehacker/ubuntu:act-latest
+```
+
+### Recommended Branch Protection
+
+For `main` (and optionally `develop`), enable branch protection with:
+
+- Require a pull request before merging
+- Require status checks to pass before merging
+- Require conversation resolution before merging
+- Block direct pushes to protected branches
+
+Recommended required checks:
+
+- `CI / build-and-test-windows`
+- `CI / build-linux`
+- `CodeQL / analyze`
 
 ## Performance Tips
 

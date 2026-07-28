@@ -1,0 +1,106 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to create or update (for example v1.0.1)
+        required: true
+        type: string
+      release_name:
+        description: Optional release title
+        required: false
+        type: string
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v6.0.0
+        with:
+          dotnet-version: 8.0.x
+          cache: true
+          cache-dependency-path: |
+            AudioNorm+.csproj
+            tests/AudioNorm.Tests/AudioNorm.Tests.csproj
+
+      - name: Restore NuGet packages
+        run: dotnet restore .\AudioNorm+.csproj
+
+      - name: Publish self-contained executable
+        run: dotnet publish .\AudioNorm+.csproj --configuration Release --runtime win-x64 --self-contained true --no-restore -p:PublishSingleFile=true -p:PublishTrimmed=false -o .\publish\release
+
+      - name: Resolve release metadata
+        id: metadata
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $tag = "${{ inputs.tag }}"
+            $name = if ([string]::IsNullOrWhiteSpace("${{ inputs.release_name }}")) { $tag } else { "${{ inputs.release_name }}" }
+          }
+          else {
+            $tag = "${{ github.ref_name }}"
+            $name = $tag
+          }
+
+          "release_tag=$tag" >> $env:GITHUB_OUTPUT
+          "release_name=$name" >> $env:GITHUB_OUTPUT
+
+      - name: Generate release notes
+        shell: pwsh
+        run: |
+          $currentTag = "${{ steps.metadata.outputs.release_tag }}"
+          $previousTag = (git tag --sort=-creatordate | Where-Object { $_ -ne $currentTag } | Select-Object -First 1)
+
+          $lines = @("# Release $currentTag", "")
+          if ($previousTag) {
+            $lines += "Changes since $previousTag:"
+            $lines += ""
+            $lines += git log "$previousTag..HEAD" --pretty=format:"- %s (%h)"
+          }
+          else {
+            $lines += "Recent commits:"
+            $lines += ""
+            $lines += git log -20 --pretty=format:"- %s (%h)"
+          }
+
+          $lines | Set-Content -Path "$env:GITHUB_WORKSPACE\release-notes.md"
+
+      - name: Upload release bundle
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: AudioNorm+-${{ steps.metadata.outputs.release_tag }}
+          path: |
+            publish/release/AudioNorm+.exe
+            release-notes.md
+
+      - name: Create or update GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "${{ steps.metadata.outputs.release_tag }}"
+          $name = "${{ steps.metadata.outputs.release_name }}"
+          $exe = (Resolve-Path ".\publish\release\AudioNorm+.exe").Path
+          $notes = (Resolve-Path ".\release-notes.md").Path
+
+          gh release view $tag *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $tag "$exe#AudioNorm+.exe" "$notes#release-notes.md" --clobber
+          }
+          else {
+            gh release create $tag "$exe#AudioNorm+.exe" "$notes#release-notes.md" --title $name --notes-file $notes --target ${{ github.sha }}
+          }
