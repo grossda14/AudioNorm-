@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AudioNorm.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7105e4822f33e5e613035194761391d3db5974d4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b7435c2f53bee0f3126425161ee9cbc253b15d50")]
 [assembly: System.Reflection.AssemblyProductAttribute("AudioNorm.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AudioNorm.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -51,6 +51,10 @@ namespace AudioNormPlus.Services
                 var data = new ReplayGainData
                 {
                     TrackGain = trackGain,
+                    // Peak calculation requires a separate analysis pass (not yet implemented in AudioAnalyzer).
+                    // 1.0 is used as a conservative placeholder — it signals "peak at full scale" and tells
+                    // players that no headroom is guaranteed. A future enhancement should populate this from
+                    // the actual max-absolute-sample value measured during audio analysis.
                     TrackPeak = 1.0,
                     AlbumGain = albumGain,
                     AlbumPeak = albumGain.HasValue ? 1.0 : null

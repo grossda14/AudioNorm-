@@ -19,9 +19,9 @@ namespace AudioNormPlus.Models
         /// <summary>Album peak sample value 0.0–1.0. Null when AlbumGain is null.</summary>
         public double? AlbumPeak { get; init; }
 
-        /// <summary>Formats a gain value as "+4.00 dB" / "-3.50 dB" / "0.00 dB".</summary>
+        /// <summary>Formats a gain value as "+4.00 dB" / "-3.50 dB" / "+0.00 dB".</summary>
         public static string FormatGain(double gainDb)
-            => string.Format(CultureInfo.InvariantCulture, "{0:+0.00;-0.00;0.00} dB", gainDb);
+            => string.Format(CultureInfo.InvariantCulture, "{0:+0.00;-0.00;+0.00} dB", gainDb);
 
         /// <summary>Formats a peak value as a 4-decimal string (e.g. "0.9500").</summary>
         public static string FormatPeak(double peak)
