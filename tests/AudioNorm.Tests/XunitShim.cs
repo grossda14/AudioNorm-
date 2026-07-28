@@ -7,6 +7,8 @@
 namespace Xunit
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Temporary shim for the xUnit [Fact] attribute.
@@ -54,6 +56,58 @@ namespace Xunit
                 throw new AssertionException(
                     $"Assert.Equal failed. Expected: {expected}, Actual: {actual}");
             }
+        }
+
+        /// <summary>
+        /// Asserts that two strings are equal.
+        /// </summary>
+        public static void Equal(string? expected, string? actual)
+        {
+            if (!string.Equals(expected, actual, StringComparison.Ordinal))
+            {
+                throw new AssertionException(
+                    $"Assert.Equal failed. Expected: \"{expected}\", Actual: \"{actual}\"");
+            }
+        }
+
+        /// <summary>
+        /// Asserts that an object is null.
+        /// </summary>
+        public static void Null(object? obj)
+        {
+            if (obj != null)
+                throw new AssertionException($"Assert.Null failed. Object was: {obj}");
+        }
+
+        /// <summary>
+        /// Asserts that an object is not null.
+        /// </summary>
+        public static void NotNull(object? obj)
+        {
+            if (obj == null)
+                throw new AssertionException("Assert.NotNull failed. Object was null.");
+        }
+
+        /// <summary>
+        /// Asserts that a collection contains exactly one element.
+        /// </summary>
+        public static void Single<T>(IEnumerable<T> collection)
+        {
+            if (collection == null) throw new AssertionException("Assert.Single failed. Collection was null.");
+            int count = collection.Count();
+            if (count != 1)
+                throw new AssertionException($"Assert.Single failed. Expected 1 element, got {count}.");
+        }
+
+        /// <summary>
+        /// Asserts that a collection is empty.
+        /// </summary>
+        public static void Empty<T>(IEnumerable<T> collection)
+        {
+            if (collection == null) throw new AssertionException("Assert.Empty failed. Collection was null.");
+            int count = collection.Count();
+            if (count != 0)
+                throw new AssertionException($"Assert.Empty failed. Expected 0 elements, got {count}.");
         }
     }
 
