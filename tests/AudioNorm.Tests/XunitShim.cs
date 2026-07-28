@@ -22,6 +22,15 @@ namespace Xunit
     public static class Assert
     {
         /// <summary>
+        /// Asserts that a condition is true.
+        /// </summary>
+        public static void True(bool condition)
+        {
+            if (!condition)
+                throw new AssertionException("Assert.True failed. Condition was false.");
+        }
+
+        /// <summary>
         /// Asserts that two doubles are equal within a specified precision.
         /// </summary>
         public static void Equal(double expected, double actual, int precision)

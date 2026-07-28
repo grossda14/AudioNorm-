@@ -1,3 +1,9 @@
+/home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/obj/Debug/net8.0-windows10.0.19041.0/AudioNorm.Tests.csproj.AssemblyReference.cache
+/home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/obj/Debug/net8.0-windows10.0.19041.0/AudioNorm.Tests.GeneratedMSBuildEditorConfig.editorconfig
+/home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/obj/Debug/net8.0-windows10.0.19041.0/AudioNorm.Tests.AssemblyInfoInputs.cache
+/home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/obj/Debug/net8.0-windows10.0.19041.0/AudioNorm.Tests.AssemblyInfo.cs
+/home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/obj/Debug/net8.0-windows10.0.19041.0/AudioNorm.Tests.csproj.CoreCompileInputs.cache
+/home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/obj/Debug/net8.0-windows10.0.19041.0/AudioNorm.Tests.sourcelink.json
 /home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/bin/Debug/net8.0-windows10.0.19041.0/AudioNorm+.deps.json
 /home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/bin/Debug/net8.0-windows10.0.19041.0/AudioNorm+.runtimeconfig.json
 /home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/bin/Debug/net8.0-windows10.0.19041.0/AudioNorm+.exe
@@ -98,12 +104,6 @@
 /home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/bin/Debug/net8.0-windows10.0.19041.0/WinRT.Runtime.dll
 /home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/bin/Debug/net8.0-windows10.0.19041.0/AudioNorm+.dll
 /home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/bin/Debug/net8.0-windows10.0.19041.0/AudioNorm+.pdb
-/home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/obj/Debug/net8.0-windows10.0.19041.0/AudioNorm.Tests.csproj.AssemblyReference.cache
-/home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/obj/Debug/net8.0-windows10.0.19041.0/AudioNorm.Tests.GeneratedMSBuildEditorConfig.editorconfig
-/home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/obj/Debug/net8.0-windows10.0.19041.0/AudioNorm.Tests.AssemblyInfoInputs.cache
-/home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/obj/Debug/net8.0-windows10.0.19041.0/AudioNorm.Tests.AssemblyInfo.cs
-/home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/obj/Debug/net8.0-windows10.0.19041.0/AudioNorm.Tests.csproj.CoreCompileInputs.cache
-/home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/obj/Debug/net8.0-windows10.0.19041.0/AudioNorm.Tests.sourcelink.json
 /home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/obj/Debug/net8.0-windows10.0.19041.0/AudioNor.A93F4EA0.Up2Date
 /home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/obj/Debug/net8.0-windows10.0.19041.0/AudioNorm.Tests.dll
 /home/runner/work/AudioNorm-/AudioNorm-/tests/AudioNorm.Tests/obj/Debug/net8.0-windows10.0.19041.0/refint/AudioNorm.Tests.dll

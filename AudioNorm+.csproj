@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>AudioNorm+</AssemblyName>
     <RootNamespace>AudioNormPlus</RootNamespace>
@@ -30,6 +30,10 @@
     <DebugSymbols>false</DebugSymbols>
     <Optimize>true</Optimize>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="tests/**/*.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.2.1" />

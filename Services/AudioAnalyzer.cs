@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using NAudio.Wave;
 using AudioNormPlus.Models;
@@ -7,11 +8,19 @@ namespace AudioNormPlus.Services
 {
     public class AudioAnalyzer
     {
+        private readonly LoudnessMeter _loudnessMeter;
+
+        public AudioAnalyzer() : this(new LoudnessMeter()) { }
+
+        public AudioAnalyzer(LoudnessMeter loudnessMeter)
+        {
+            _loudnessMeter = loudnessMeter ?? throw new ArgumentNullException(nameof(loudnessMeter));
+        }
+
         /// <summary>
         /// Analyze the given audio file and populate Duration and LoudnessIntegrated (approximate LUFS).
         /// Uses NAudio's MediaFoundationReader to support common formats (MP3, AAC, WAV).
-        /// The LUFS calculation here is an approximation using RMS over the whole file.
-        /// For production-grade EBU R128 measurement a dedicated implementation is recommended.
+        /// Delegates loudness calculation to <see cref="LoudnessMeter"/> (RMS-based approximation).
         /// </summary>
         public async Task AnalyzeFileAsync(AudioFile file)
         {
@@ -25,31 +34,19 @@ namespace AudioNormPlus.Services
 
                 const int bufferSamples = 8192;
                 float[] buffer = new float[bufferSamples];
-                long totalSamples = 0;
-                double sumSquares = 0.0;
+                var allSamples = new List<float>();
 
                 int read;
                 while ((read = sampleProvider.Read(buffer, 0, buffer.Length)) > 0)
                 {
                     for (int i = 0; i < read; i++)
-                    {
-                        double s = buffer[i];
-                        sumSquares += s * s;
-                    }
-                    totalSamples += read;
+                        allSamples.Add(buffer[i]);
                 }
 
-                double rms = totalSamples > 0 ? Math.Sqrt(sumSquares / totalSamples) : 0.0;
-
-                // Convert RMS (linear) to dBFS. Avoid log of zero.
-                double dbfs = rms > 0.0 ? 20.0 * Math.Log10(rms) : -200.0;
-
-                // Approximate LUFS by treating dBFS RMS as LUFS (this is an approximation).
-                // TODO: Replace with a proper EBU R128 implementation (K-weighting, gating, etc.).
-                double lufsApprox = dbfs;
+                double lufs = _loudnessMeter.MeasureLoudness(allSamples.ToArray());
 
                 file.Duration = reader.TotalTime;
-                file.LoudnessIntegrated = Math.Round(lufsApprox, 2);
+                file.LoudnessIntegrated = Math.Round(lufs, 2);
                 file.Status = ProcessingStatus.Analyzed;
             }
             catch (Exception ex)
