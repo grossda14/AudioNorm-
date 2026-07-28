@@ -26,6 +26,14 @@ namespace AudioNormPlus.Services
             return TargetLufs - mean;
         }
 
+        // Calculate album peak: maximum track peak across all files
+        public double CalculateAlbumPeak(IEnumerable<AudioFile> files)
+        {
+            var peaks = files.Where(f => f.TrackPeak.HasValue).Select(f => f.TrackPeak!.Value).ToList();
+            if (!peaks.Any()) return -200.0;
+            return peaks.Max();
+        }
+
         // Normalize to 0.5 dB increments and clamp to reasonable range
         public double NormalizeGainIncrement(double gain)
         {
